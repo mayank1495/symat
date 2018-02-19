@@ -42,10 +42,10 @@ class Symat
 	Symat(const EIGEN_DYNAMIC_MATRIX_TYPE &);
 
 	//Overloading () operator to return S(i,j)
-	SType operator()(int, int);
+	SType operator()(int, int) const;
 
 	//Accessor function for s_dim
-	int dim() { return s_dim; }
+	int dim() const { return s_dim; }
 
 	//Functions to add matrices
 	EIGEN_DYNAMIC_MATRIX_TYPE add(const EIGEN_DYNAMIC_MATRIX_TYPE &);
@@ -78,7 +78,7 @@ SYMAT_MATRIX_TYPE::Symat(const EIGEN_DYNAMIC_MATRIX_TYPE &mat)
 
 //Overloading () operator to behave as accessor for S(i,j)
 SYMAT_TEMPLATE
-SType SYMAT_MATRIX_TYPE::operator()(int i, int j)
+SType SYMAT_MATRIX_TYPE::operator()(int i, int j) const
 {
 	if (i > j)
 		swap(i, j);
@@ -113,8 +113,7 @@ SYMAT_TEMPLATE
 EIGEN_DYNAMIC_MATRIX_TYPE SYMAT_MATRIX_TYPE::add(const SYMAT_MATRIX_TYPE &s_mat)
 {
 	EIGEN_DYNAMIC_MATRIX_TYPE temp;
-	temp.resize(s_dim);
-
+	temp.resize(s_dim, s_dim);
 	if (s_dim == s_mat.dim())
 	{
 		for (int i = 0; i < s_dim; i++)
@@ -238,7 +237,8 @@ int main()
 		 << endl;
 	Symat<float> S(m);
 	Symat<float> S2(z);
-	Matrix<float, Dynamic, Dynamic> kk = S.add(z);
+	Matrix<float, Dynamic, Dynamic> kk = S.mul(z);
+	// MatrixXf kk = S.add(S2);
 	cout << kk << endl;
 	// S2.add(m);
 	cout << "in main.." << endl;
