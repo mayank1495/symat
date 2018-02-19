@@ -37,53 +37,31 @@ class Symat
   public:
 	//Default constructor
 	Symat() {}
+
 	//Constructor to initialize symmetric matrix from Eigen::Matrix
-	// template <typename scalar, int rows, int cols>
-	// MATRIX_TEMPLATE
 	Symat(const EIGEN_DYNAMIC_MATRIX_TYPE &);
 
 	//Overloading () operator to return S(i,j)
 	SType operator()(int, int);
 
+	//Accessor function for s_dim
+	int dim() { return s_dim; }
+
 	//Functions to add matrices
-	//return types: eigenMatrix , Symat Matrix
-	//Args: eigenMatrix, Symat Matrix
-	// MATRIX_TEMPLATE
-	// EIGEN_MATRIX_TYPE add(const EIGEN_MATRIX_TYPE &);
-
-	// MATRIX_TEMPLATE
-	// EIGEN_MATRIX_TYPE add(const SYMAT_MATRIX_TYPE &);
-
 	EIGEN_DYNAMIC_MATRIX_TYPE add(const EIGEN_DYNAMIC_MATRIX_TYPE &);
 	EIGEN_DYNAMIC_MATRIX_TYPE add(const SYMAT_MATRIX_TYPE &);
-	// template <typename scalar, int rows, int cols>
-	// void add(const EIGEN_MATRIX_TYPE &); //Symat<X>
-	// template <typename scalar, int rows, int cols>
-	// EIGEN_MATRIX_TYPE add(const Symat<X> &);
-	// // Symat<X> add(const Symat<X> &);
 
 	//Functions to sub matrices
-	// MATRIX_TEMPLATE
 	EIGEN_DYNAMIC_MATRIX_TYPE sub(const EIGEN_DYNAMIC_MATRIX_TYPE &);
-	// MATRIX_TEMPLATE
 	EIGEN_DYNAMIC_MATRIX_TYPE sub(const SYMAT_MATRIX_TYPE &);
-	// MATRIX_TEMPLATE
-	// SYMAT_MATRIX_TYPE sub(const EIGEN_MATRIX_TYPE &);
-	// SYMAT_MATRIX_TYPE sub(const SYMAT_MATRIX_TYPE &);
 
 	//Functions to mul matrices
-	// MATRIX_TEMPLATE
 	EIGEN_DYNAMIC_MATRIX_TYPE mul(const EIGEN_DYNAMIC_MATRIX_TYPE &);
-	// MATRIX_TEMPLATE
 	EIGEN_DYNAMIC_MATRIX_TYPE mul(const SYMAT_MATRIX_TYPE &);
-	// MATRIX_TEMPLATE
-	// SYMAT_MATRIX_TYPE mul(const EIGEN_MATRIX_TYPE &);
-	// SYMAT_MATRIX_TYPE mul(const SYMAT_MATRIX_TYPE &);
 };
 
 //Constructor takes Eigen Matrix as parameter and iniializes the Symat Matrix
 //with upper diognal of the Eigen Matrx
-// MATRIX_TEMPLATE
 SYMAT_TEMPLATE
 SYMAT_MATRIX_TYPE::Symat(const EIGEN_DYNAMIC_MATRIX_TYPE &mat)
 {
@@ -96,7 +74,6 @@ SYMAT_MATRIX_TYPE::Symat(const EIGEN_DYNAMIC_MATRIX_TYPE &mat)
 				s_vec.push_back(mat(i, j));
 			}
 		}
-	// cout << "In constructor..";
 }
 
 //Overloading () operator to behave as accessor for S(i,j)
@@ -106,17 +83,18 @@ SType SYMAT_MATRIX_TYPE::operator()(int i, int j)
 	if (i > j)
 		swap(i, j);
 	int idx = ((i * s_dim) + j) - ((i * (i + 1)) / 2);
-	// cout<<"\nix:"<<idx<<"; "<<endl;
+
 	return s_vec[idx];
-	// cout << "In op..";
 }
 
+//Add() Function takes Eigen Matrix as parameter, creates a temp eigen matrix
+//and adds symat matrix
 SYMAT_TEMPLATE
 EIGEN_DYNAMIC_MATRIX_TYPE SYMAT_MATRIX_TYPE::add(const EIGEN_DYNAMIC_MATRIX_TYPE &mat)
 {
-	Matrix<SType, Dynamic, Dynamic> temp;
+	EIGEN_DYNAMIC_MATRIX_TYPE temp;
 	temp.resize(s_dim, s_dim);
-	// 	// cout<<"k: "<<mat.rows()<<" "<<mat.cols()<<" ,..,.;"<<endl;
+
 	if (s_dim == mat.rows() && s_dim == mat.cols())
 	{
 		for (int i = 0; i < s_dim; i++)
@@ -130,58 +108,122 @@ EIGEN_DYNAMIC_MATRIX_TYPE SYMAT_MATRIX_TYPE::add(const EIGEN_DYNAMIC_MATRIX_TYPE
 	}
 }
 
-// SYMAT_TEMPLATE
-// MATRIX_TEMPLATE
-// EIGEN_MATRIX_TYPE SYMAT_MATRIX_TYPE::add(const EIGEN_MATRIX_TYPE &mat)
-// {
-// 	// cout<<"k: "<<rows<<" "<<cols<<" ,..,.;"<<endl;
-// 	// EIGEN_MATRIX_TYPE temp;
-// 	// const int r=mat.rows();
-// 	// const int c=mat.rows();
-// 	// Matrix<SType,r,c> temp;
-// 	Matrix<SType, Dynamic, Dynamic> temp;
-// 	temp.resize(s_dim, s_dim);
-// 	// cout<<"k: "<<mat.rows()<<" "<<mat.cols()<<" ,..,.;"<<endl;
-// 	if (s_dim == mat.rows() && s_dim == mat.cols())
-// 	{
-// 		for (int i = 0; i < s_dim; i++)
-// 		{
-// 			for (int j = 0; j < s_dim; j++)
-// 			{
-// 				temp(i, j) = mat(i, j) + this->operator()(i, j);
-// 			}
-// 		}
-// 		return temp;
-// 	}
-// }
+//Add() function takes Symat matrix as input and adds
+SYMAT_TEMPLATE
+EIGEN_DYNAMIC_MATRIX_TYPE SYMAT_MATRIX_TYPE::add(const SYMAT_MATRIX_TYPE &s_mat)
+{
+	EIGEN_DYNAMIC_MATRIX_TYPE temp;
+	temp.resize(s_dim);
 
-// template <typename X>
-// template <typename scalar, int rows, int cols>
-// void Symat<X>::add(const Matrix<scalar, rows, cols> &mat)
-// {
-//     Symat<X> temp;
-//     X k;
-//     // cout<<s_dim<<"s.."<<endl;
-//     if (s_dim == mat.rows() && s_dim == mat.cols())
-//     {
-//         // cout<<"in if 1.."<<endl;
-//         for (int i = 0; i < s_dim; i++)
-//         {
-//             // cout<<"in for 1.."<<endl;
-//             for (int j = 0; j < s_dim; j++)
-//             {
-//                 // cout<<"\nin for 2.."<<endl;
-//                 // k=mat(i,j);
-//                 // cout<<k<<"+"<<this->operator()(i, j)<<"=";
-//                 k = (mat(i, j) + this->operator()(i, j));
-//                 cout << k << "; ";
-//             }
-//             cout << endl;
-//         }
-//         // cout<<"\nenddd..";
-//     }
-//     // cout<<"here..\n";
-// }
+	if (s_dim == s_mat.dim())
+	{
+		for (int i = 0; i < s_dim; i++)
+		{
+			for (int j = 0; j < s_dim; j++)
+			{
+				temp(i, j) = s_mat(i, j) + this->operator()(i, j);
+			}
+		}
+		return temp;
+	}
+}
+
+//Sub() Function takes Eigen Matrix as parameter, creates a temp eigen matrix
+//and subs symat matrix
+SYMAT_TEMPLATE
+EIGEN_DYNAMIC_MATRIX_TYPE SYMAT_MATRIX_TYPE::sub(const EIGEN_DYNAMIC_MATRIX_TYPE &mat)
+{
+	EIGEN_DYNAMIC_MATRIX_TYPE temp;
+	temp.resize(s_dim, s_dim);
+
+	if (s_dim == mat.rows() && s_dim == mat.cols())
+	{
+		for (int i = 0; i < s_dim; i++)
+		{
+			for (int j = 0; j < s_dim; j++)
+			{
+				temp(i, j) = this->operator()(i, j) - mat(i, j);
+			}
+		}
+		return temp;
+	}
+}
+
+//Sub() function takes Symat matrix as input and subs
+SYMAT_TEMPLATE
+EIGEN_DYNAMIC_MATRIX_TYPE SYMAT_MATRIX_TYPE::sub(const SYMAT_MATRIX_TYPE &s_mat)
+{
+	EIGEN_DYNAMIC_MATRIX_TYPE temp;
+	temp.resize(s_dim);
+
+	if (s_dim == s_mat.dim())
+	{
+		for (int i = 0; i < s_dim; i++)
+		{
+			for (int j = 0; j < s_dim; j++)
+			{
+				temp(i, j) = this->operator()(i, j) - s_mat(i, j);
+			}
+		}
+		return temp;
+	}
+}
+
+//Mul function takes Eigen matrix and multiples
+SYMAT_TEMPLATE
+EIGEN_DYNAMIC_MATRIX_TYPE SYMAT_MATRIX_TYPE::mul(const EIGEN_DYNAMIC_MATRIX_TYPE &mat)
+{
+	if (s_dim == mat.rows())
+	{
+		EIGEN_DYNAMIC_MATRIX_TYPE temp;
+		int t_rows = s_dim, t_cols = mat.cols();
+		temp.resize(t_rows, t_cols);
+
+		long long sum = 0;
+		for (int i = 0; i < t_rows; i++)
+		{
+			for (int j = 0; j < t_cols; j++)
+			{
+				sum = 0;
+				for (int mov = 0; mov < s_dim; mov++)
+				{
+					sum += ((this->operator()(i, mov)) * (mat(mov, j)));
+				}
+				temp(i, j) = sum;
+			}
+		}
+
+		return temp;
+	}
+}
+
+//Mul function takes Symat matrix and multiples
+SYMAT_TEMPLATE
+EIGEN_DYNAMIC_MATRIX_TYPE SYMAT_MATRIX_TYPE::mul(const SYMAT_MATRIX_TYPE &s_mat)
+{
+	if (s_dim == s_mat.dim())
+	{
+		EIGEN_DYNAMIC_MATRIX_TYPE temp;
+		int t_rows = s_dim, t_cols = s_dim;
+		temp.resize(t_rows, t_cols);
+
+		long long sum = 0;
+		for (int i = 0; i < t_rows; i++)
+		{
+			for (int j = 0; j < t_cols; j++)
+			{
+				sum = 0;
+				for (int mov = 0; mov < s_dim; mov++)
+				{
+					sum += ((this->operator()(i, mov)) * (s_mat(mov, j)));
+				}
+				temp(i, j) = sum;
+			}
+		}
+
+		return temp;
+	}
+}
 
 int main()
 {
