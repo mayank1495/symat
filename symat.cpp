@@ -58,6 +58,20 @@ class Symat
 	//Functions to mul matrices
 	EIGEN_DYNAMIC_MATRIX_TYPE mul(const EIGEN_DYNAMIC_MATRIX_TYPE &);
 	EIGEN_DYNAMIC_MATRIX_TYPE mul(const SYMAT_MATRIX_TYPE &);
+
+	//overloading ostream << operator to cout<<S
+	friend ostream &operator<<(ostream &out, const SYMAT_MATRIX_TYPE &s_mat)
+	{
+		for (int i = 0; i < s_mat.s_dim; i++)
+		{
+			for (int j = 0; j < s_mat.s_dim; j++)
+			{
+				cout << s_mat(i, j) << " ";
+			}
+			cout << endl;
+		}
+		cout << endl;
+	}
 };
 
 //Constructor takes Eigen Matrix as parameter and iniializes the Symat Matrix
@@ -224,6 +238,21 @@ EIGEN_DYNAMIC_MATRIX_TYPE SYMAT_MATRIX_TYPE::mul(const SYMAT_MATRIX_TYPE &s_mat)
 	}
 }
 
+// SYMAT_TEMPLATE
+// ostream &operator<<(ostream &out, const SYMAT_MATRIX_TYPE &s_mat)
+// {
+// 	// int dim=s_mat.dim();
+// 	for (int i = 0; i < s_mat.s_dim; i++)
+// 	{
+// 		for (int j = 0; j < s_mat.s_dim; j++)
+// 		{
+// 			cout << s_mat(i, j) << " ";
+// 		}
+// 		cout << endl;
+// 	}
+// 	cout << endl;
+// }
+
 int main()
 {
 	MatrixXf m(3, 3);
@@ -237,6 +266,8 @@ int main()
 		 << endl;
 	Symat<float> S(m);
 	Symat<float> S2(z);
+	cout<<"S:\n"<<S;
+	cout<<"S2:\n"<<S2;
 	Matrix<float, Dynamic, Dynamic> kk = S.mul(z);
 	// MatrixXf kk = S.add(S2);
 	cout << kk << endl;
