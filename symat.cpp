@@ -1,65 +1,82 @@
 #include <bits/stdc++.h>
 #include <Eigen/Dense>
+
 using namespace std;
 using namespace Eigen;
-/*
-Eigen matrix M;
-Symat S(m);
-S.display()--> sym matrix
-S(i,j)==S(j,i);
-Add/Sub: S1+/-S2  S+/-M
-MUL: S1*S2  S*M
-*/
 
-//NOT NEEDED ?
-#define MATRIX_TEMPLATE template <typename scalar, int rows, int cols>
-#define EIGEN_MATRIX_TYPE Matrix<scalar, rows, cols>
-
+// Macro for class template. SType is to be passed
+// during object creation.
 #define SYMAT_TEMPLATE template <typename SType>
+
+// Macro to declare Symat class matrix type.
 #define SYMAT_MATRIX_TYPE Symat<SType>
+
+// Macro for dynamic Eigen::Matrix declaration with Scalar argument
+// being SType which is passed during Symat object creation.
 #define EIGEN_DYNAMIC_MATRIX_TYPE Matrix<SType, Dynamic, Dynamic>
 
-// #define SYMAT_MATRIX_TYPE Symat<Stype>
+/*
+Class for symmetric matrices. Symmetric matrix is 
+formed by passing a generic square Eigen::Matrix.
+Only the upper diognal is stored since for 
+a symmetrix matrix S, S(i,j)=S(j,i).
+Class uses template definitions, hence matrix data type
+is to passed during object creation.
+USAGE:
+	Symat<data_type> obj(Eigen::Matrix);
+	Eg: Symat<float> S(m);
+OPERATIONS:
+	Symat +/- Symat
+	Symat +/- Eigen::Matrix
+	Symat∗Symat
+	Symat∗Eigen::Matrix
+NOTE:
+	*Eigen::Matrix during object creation should be a generic sqaure matrix.
+	*Datatype of Eigen::Matrix and the symmetric matrix should be same
+	 in any operation and object creation.
+*/
 
-// template <typename SType>
 SYMAT_TEMPLATE
 class Symat
 {
-
   private:
-	//vector to store upper triangle matrix
+	// Vector of type SType(data_type passed during object creation) to store
+	// upper diognal of Eigen::Matrix.
 	vector<SType> s_vec;
-	//Variable to store dimension of the symmetric matrix
+
+	// Variable to store dimension of the symmetric matrix.
+	// Initialized from Eigen::Matrix passed during Symat object creation.
 	int s_dim;
+
 	//Function to check validity
 	//??
 
   public:
-	//Default constructor
+	// Default constructor ??
 	Symat() {}
 
-	//Constructor to initialize symmetric matrix from Eigen::Matrix
+	// Parameterized constructor to initialize symmetric matrix from Eigen::Matrix
 	Symat(const EIGEN_DYNAMIC_MATRIX_TYPE &);
 
-	//Overloading () operator to return S(i,j)
+	// Overloading () operator to return value of symmetric matrix at (i,j).
 	SType operator()(int, int) const;
 
-	//Accessor function for s_dim
+	//Accessor function to get dimension of symmetric matrix.
 	int dim() const { return s_dim; }
 
-	//Functions to add matrices
+	// Functions to add matrices
 	EIGEN_DYNAMIC_MATRIX_TYPE add(const EIGEN_DYNAMIC_MATRIX_TYPE &);
 	EIGEN_DYNAMIC_MATRIX_TYPE add(const SYMAT_MATRIX_TYPE &);
 
-	//Functions to sub matrices
+	// Functions to subtract matrices
 	EIGEN_DYNAMIC_MATRIX_TYPE sub(const EIGEN_DYNAMIC_MATRIX_TYPE &);
 	EIGEN_DYNAMIC_MATRIX_TYPE sub(const SYMAT_MATRIX_TYPE &);
 
-	//Functions to mul matrices
+	// Functions to multiply matrices
 	EIGEN_DYNAMIC_MATRIX_TYPE mul(const EIGEN_DYNAMIC_MATRIX_TYPE &);
 	EIGEN_DYNAMIC_MATRIX_TYPE mul(const SYMAT_MATRIX_TYPE &);
 
-	//overloading ostream << operator to cout<<S
+	// overloading ostream << operator to output symmetric matrix using cout.
 	friend ostream &operator<<(ostream &out, const SYMAT_MATRIX_TYPE &s_mat)
 	{
 		for (int i = 0; i < s_mat.s_dim; i++)
@@ -74,8 +91,9 @@ class Symat
 	}
 };
 
-//Constructor takes Eigen Matrix as parameter and iniializes the Symat Matrix
-//with upper diognal of the Eigen Matrx
+// Constructor takes Eigen::Matrix as parameter and initializes the Symat class
+// object. The dimension is stored in s_dim.
+// The upper diognal of the Eigen::Matrix is stored in vector s_vec.
 SYMAT_TEMPLATE
 SYMAT_MATRIX_TYPE::Symat(const EIGEN_DYNAMIC_MATRIX_TYPE &mat)
 {
@@ -90,7 +108,10 @@ SYMAT_MATRIX_TYPE::Symat(const EIGEN_DYNAMIC_MATRIX_TYPE &mat)
 		}
 }
 
-//Overloading () operator to behave as accessor for S(i,j)
+// From the passed (i,j), index is calculated to return
+// the required symmetric matrix value at (i,j) from vector s_vec.
+// If i>j then values are swaped and then index is calculated
+// since for a Symat matrix S, S(i,j)=S(j,i)
 SYMAT_TEMPLATE
 SType SYMAT_MATRIX_TYPE::operator()(int i, int j) const
 {
@@ -101,8 +122,12 @@ SType SYMAT_MATRIX_TYPE::operator()(int i, int j) const
 	return s_vec[idx];
 }
 
-//Add() Function takes Eigen Matrix as parameter, creates a temp eigen matrix
-//and adds symat matrix
+// Eigen::Matrix is passed as parameter and a temporary Eigen::Matrix
+// is declared within. Function adds the passed matrix to the Symat matrix
+// and stores the result in the temp Eigen::Matrix.
+// The temp matrix is resized to the dimension of the symmetric matrix.
+// NOTE: The dimension of the matrices should be same.
+// The result is returned as Eigen::Matrix.
 SYMAT_TEMPLATE
 EIGEN_DYNAMIC_MATRIX_TYPE SYMAT_MATRIX_TYPE::add(const EIGEN_DYNAMIC_MATRIX_TYPE &mat)
 {
@@ -122,7 +147,12 @@ EIGEN_DYNAMIC_MATRIX_TYPE SYMAT_MATRIX_TYPE::add(const EIGEN_DYNAMIC_MATRIX_TYPE
 	}
 }
 
-//Add() function takes Symat matrix as input and adds
+// Symat matrix is passed as parameter and a temporary Eigen::Matrix
+// is declared within. Function adds the passed matrix to the Symat matrix
+// and stores the result in the temp Eigen::Matrix.
+// The temp matrix is resized to the dimension of the symmetric matrix.
+// NOTE: The dimension of the matrices should be same.
+// The result is returned as Eigen::Matrix.
 SYMAT_TEMPLATE
 EIGEN_DYNAMIC_MATRIX_TYPE SYMAT_MATRIX_TYPE::add(const SYMAT_MATRIX_TYPE &s_mat)
 {
@@ -141,8 +171,13 @@ EIGEN_DYNAMIC_MATRIX_TYPE SYMAT_MATRIX_TYPE::add(const SYMAT_MATRIX_TYPE &s_mat)
 	}
 }
 
-//Sub() Function takes Eigen Matrix as parameter, creates a temp eigen matrix
-//and subs symat matrix
+// Eigen::Matrix is passed as parameter and a temporary Eigen::Matrix
+// is declared within.
+// NOTE: Function substracts the passed matrix from the Symat matrix.
+// The result is stored in the temp Eigen::Matrix.
+// The temp matrix is resized to the dimension of the symmetric matrix.
+// NOTE: The dimension of the matrices should be same.
+// The result is returned as Eigen::Matrix.
 SYMAT_TEMPLATE
 EIGEN_DYNAMIC_MATRIX_TYPE SYMAT_MATRIX_TYPE::sub(const EIGEN_DYNAMIC_MATRIX_TYPE &mat)
 {
@@ -162,7 +197,13 @@ EIGEN_DYNAMIC_MATRIX_TYPE SYMAT_MATRIX_TYPE::sub(const EIGEN_DYNAMIC_MATRIX_TYPE
 	}
 }
 
-//Sub() function takes Symat matrix as input and subs
+// Symat Matrix is passed as parameter and a temporary Eigen::Matrix
+// is declared within.
+// NOTE: Function substracts the passed matrix from the Symat matrix.
+// The result is stored in the temp Eigen::Matrix.
+// The temp matrix is resized to the dimension of the symmetric matrix.
+// NOTE: The dimension of the matrices should be same.
+// The result is returned as Eigen::Matrix.
 SYMAT_TEMPLATE
 EIGEN_DYNAMIC_MATRIX_TYPE SYMAT_MATRIX_TYPE::sub(const SYMAT_MATRIX_TYPE &s_mat)
 {
@@ -182,7 +223,13 @@ EIGEN_DYNAMIC_MATRIX_TYPE SYMAT_MATRIX_TYPE::sub(const SYMAT_MATRIX_TYPE &s_mat)
 	}
 }
 
-//Mul function takes Eigen matrix and multiples
+// Eigen::Matrix is passed as parameter and a temporary Eigen::Matrix
+// is declared within.
+// The result is stored in the temp Eigen::Matrix.
+// The temp matrix is resized to rows equal to the dimension of symmetric matrix
+// and columns equal to the columns of passed matrix.
+// NOTE: The columns of the Symat Matrix should be equal to the rows of the passed Matrix.
+// The result is returned as Eigen::Matrix.
 SYMAT_TEMPLATE
 EIGEN_DYNAMIC_MATRIX_TYPE SYMAT_MATRIX_TYPE::mul(const EIGEN_DYNAMIC_MATRIX_TYPE &mat)
 {
@@ -210,7 +257,13 @@ EIGEN_DYNAMIC_MATRIX_TYPE SYMAT_MATRIX_TYPE::mul(const EIGEN_DYNAMIC_MATRIX_TYPE
 	}
 }
 
-//Mul function takes Symat matrix and multiples
+// Symat Matrix is passed as parameter and a temporary Eigen::Matrix
+// is declared within.
+// The result is stored in the temp Eigen::Matrix.
+// The temp matrix is resized to rows equal to the dimension of symmetric matrix
+// and columns equal to the columns of passed matrix.
+// NOTE: The columns of the Symat Matrix should be equal to the rows of the passed Matrix.
+// The result is returned as Eigen::Matrix.
 SYMAT_TEMPLATE
 EIGEN_DYNAMIC_MATRIX_TYPE SYMAT_MATRIX_TYPE::mul(const SYMAT_MATRIX_TYPE &s_mat)
 {
@@ -238,21 +291,6 @@ EIGEN_DYNAMIC_MATRIX_TYPE SYMAT_MATRIX_TYPE::mul(const SYMAT_MATRIX_TYPE &s_mat)
 	}
 }
 
-// SYMAT_TEMPLATE
-// ostream &operator<<(ostream &out, const SYMAT_MATRIX_TYPE &s_mat)
-// {
-// 	// int dim=s_mat.dim();
-// 	for (int i = 0; i < s_mat.s_dim; i++)
-// 	{
-// 		for (int j = 0; j < s_mat.s_dim; j++)
-// 		{
-// 			cout << s_mat(i, j) << " ";
-// 		}
-// 		cout << endl;
-// 	}
-// 	cout << endl;
-// }
-
 int main()
 {
 	MatrixXf m(3, 3);
@@ -266,8 +304,10 @@ int main()
 		 << endl;
 	Symat<float> S(m);
 	Symat<float> S2(z);
-	cout<<"S:\n"<<S;
-	cout<<"S2:\n"<<S2;
+	cout << "S:\n"
+		 << S;
+	cout << "S2:\n"
+		 << S2;
 	Matrix<float, Dynamic, Dynamic> kk = S.mul(z);
 	// MatrixXf kk = S.add(S2);
 	cout << kk << endl;
