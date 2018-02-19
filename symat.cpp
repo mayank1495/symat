@@ -189,7 +189,7 @@ int main()
 	Matrix<float, Dynamic, Dynamic> z;
 	z.resize(3, 3);
 	m << 1, 2, 3, 1, 2, 3, 1, 2, 3;
-	z << 1, 1, 1, 1, 1, 1, 1, 1, 1;
+	z << 1, 1, 1, 0, 1, 1, 1, 1, 1;
 	cout << m << endl
 		 << endl;
 	cout << z << endl
