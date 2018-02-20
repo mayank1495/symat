@@ -98,13 +98,14 @@ SYMAT_TEMPLATE
 SYMAT_MATRIX_TYPE::Symat(const EIGEN_DYNAMIC_MATRIX_TYPE &mat)
 {
 
-	try{
-		if(!(mat.rows()==mat.cols()))
-		 throw -1;
-	}
-	catch(...)
+	try
 	{
-		cout<<"\nError: Passed Eigen::Matrix should be a generic square matrix.\n";
+		if (!(mat.rows() == mat.cols()))
+			throw - 1;
+	}
+	catch (...)
+	{
+		cout << "\nError: Passed Eigen::Matrix should be a generic square matrix.\n";
 		return;
 	}
 
@@ -247,7 +248,7 @@ EIGEN_DYNAMIC_MATRIX_TYPE SYMAT_MATRIX_TYPE::sub(const SYMAT_MATRIX_TYPE &s_mat)
 		if (!(s_dim == s_mat.dim()))
 			throw - 1;
 
-		temp.resize(s_dim);
+		temp.resize(s_dim, s_dim);
 		for (int i = 0; i < s_dim; i++)
 		{
 			for (int j = 0; j < s_dim; j++)
@@ -348,39 +349,93 @@ EIGEN_DYNAMIC_MATRIX_TYPE SYMAT_MATRIX_TYPE::mul(const SYMAT_MATRIX_TYPE &s_mat)
 
 int main()
 {
-	MatrixXf mat3f(3,3), mat2f(2,2),iden3f(2,3);
-	mat3f<<1,2,3,1,2,3,1,2,3;
-	mat2f<<2,3,3,2;
-	iden3f<<1,2,1,2,1,2;
-	Symat<float> S(iden3f);
-	cout<<"S:"<<S;
-	// MatrixXf m(3, 3);
-	// Matrix<float, Dynamic, Dynamic> z;
-	// z.resize(3, 3);
-	// m << 1, 2, 3, 1, 2, 3, 1, 2, 3;
-	// z << 1, 1, 1, 0, 1, 1, 1, 1, 1;
-	// cout << m << endl
-	// 	 << endl;
-	// cout << z << endl
-	// 	 << endl;
-	// Symat<float> S(m);
-	// Symat<float> S2(z);
-	// cout << "S:\n"
-	// 	 << S;
-	// cout << "S2:\n"
-	// 	 << S2;
-	// Matrix<float, Dynamic, Dynamic> kk = S.mul(z);
-	// // MatrixXf kk = S.add(S2);
-	// cout << kk << endl;
-	// // S2.add(m);
-	// cout << "in main.." << endl;
-	// MatrixXf mat1(3, 3);
-	// mat1 << 1, 2, 3, 1, 2, 3, 1, 2, 3;
-	// Symat<float> SS(mat1);
-	// MatrixXf tw(2, 2);
-	// tw << 1, 2, 1, 2;
-	// MatrixXf tp = SS.mul(tw);
-	// cout << "SS: \n"
-	// 	 << tp;
-	// Symat<float> In;
+	//3 Eigen Matrix of type float with dimensions 3x3,2x2,3x3 and 3x4;
+	MatrixXf mat3f(3, 3), mat2f(2, 2), iden3f(3, 3), mat34f(3, 4);
+	mat3f << 1, 2, 3, 1, 2, 3, 1, 2, 3;
+	mat2f << 2, 3, 4, 2;
+	iden3f << 1, 1, 1, 1, 1, 1, 1, 1, 1;
+	mat34f << 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3;
+	//Symmetric matrix S, storing only the upper diognal of the passed matrix
+	Symat<float> S1(mat3f);
+	cout << "Passed Matrix(3x3) mat3f: \n"
+		 << mat3f << endl;
+	cout << "Symmetric Matrix S1: \n"
+		 << S1;
+
+	//Symmetric matrix from mat2f Eigen Matrix;
+	Symat<float> S2(mat2f);
+	cout << "Passed Matrix(2x2) mat2f: \n"
+		 << mat2f << endl;
+	cout << "Symmetric Matrix S2: \n"
+		 << S2;
+
+	//Symmetric matrix from Matrix of dimension 3x4.
+	//This will produce error since sqaure matrix is not passed.
+	Symat<float> S(mat34f);
+	cout << "Error passing 3x4 matrix. Back to main.\n\n";
+
+	/*Addition of Symmetric matrix with Eigen Matrix*/
+
+	//Adding 3x3 matrices
+	MatrixXf matAdd = S1.add(mat3f);
+	cout << "Add Result S1+mat3f:\n"
+		 << matAdd << endl;
+	//Adding 3x3 symmetric matrix with 2x2 Eigen Matrix.
+	//This will throw exception since dimensions are diffrent.
+	matAdd = S1.add(mat2f);
+	cout << "Error adding S1+mat2f. Back to main.\n\n";
+
+	/*Addition of Symmetric matrix with other Symmetric Matrix*/
+
+	//Adding 3x3 symmetric matrices
+	Symat<float> S1a(iden3f);
+	MatrixXf symAdd = S1.add(S1a);
+	cout << "Passed Matrix: \n"
+		 << S1a;
+	cout << "Add result S1+(passed matrix): \n"
+		 << symAdd << endl;
+	//Adding 3x3 symmetric matrix with 2x2 symmetric matrix.
+	//This will throw exception since dimensions are diffrent.
+	symAdd = S1.add(S2);
+	cout << "Error adding S1+S2. Back to main.\n\n"
+		 << endl;
+
+	////////////////////////////////////////////////////////////////
+
+	/*Substracting Eigen Matrix FROM Symmetric matrix*/
+
+	// 3x3 matrices
+	MatrixXf matSub = S1.sub(mat3f);
+	cout << "Sub Result S1-mat3f:\n"
+		 << matSub << endl;
+	//Subtracting  2x2 Eigen Matrix FROM 3x3 symmetric matrix .
+	// This will throw exception since dimensions are diffrent.
+	matSub = S1.sub(mat2f);
+	cout << "Error Subtracting S1-mat2f. Back to main.\n\n";
+
+	/*Substraction of Symmetric matrix from other Symmetric Matrix*/
+
+	//3x3 symmetric matrices
+	Symat<float> S1b(iden3f);
+	MatrixXf symSub = S1.sub(S1b);
+	cout << "Passed Matrix: \n"
+		 << S1a;
+	cout << "Sub. result S1-(passed matrix): \n"
+		 << symSub << endl;
+	//Subtracting 3x3 symmetric matrix with 2x2 symmetric matrix.
+	//This will throw exception since dimensions are diffrent.
+	symSub = S1.sub(S2);
+	cout << "Error Subtracting S1-S2. Back to main.\n\n"
+		 << endl;
+
+	////////////////////////////////////////////////////////////////////////
+
+	/*Multiplication Of Symmetric Matrix with Eigen::Matrix*/
+
+	//Multiplying 3x3 Symmetric Matrix with 3x4 Eigen Matrix
+	MatrixXf matMul = S1.mul(mat34f);
+	cout << "Passed Matrix(3x4): \n"
+		 << mat34f << endl;
+	cout << "Mul. result S1*(passed matrix) (3x3)x(3x4)=(3x4): \n"
+		 << matMul << endl;
 }
